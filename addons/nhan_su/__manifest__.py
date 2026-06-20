@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "nhan_su",
-
+    'sequence': 1,
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
         subtitle on modules listing or apps.openerp.com""",
@@ -18,12 +18,14 @@
     # for the full list
     'category': 'Uncategorized',
     'version': '0.1',
-
+    'license': 'LGPL-3',
     # any module necessary for this one to work correctly
     'depends': ['base'],
 
     # always loaded
     'data': [
+        'data/ir_sequence_data.xml',
+        'security/nhan_su_security.xml',
         'security/ir.model.access.csv',
         'views/chuc_vu.xml',
         'views/don_vi.xml',

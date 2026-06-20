@@ -1,0 +1,4 @@
+<odoo>
+    <menuitem id="menu_crm_root" name="Quản lý khách hàng (CRM)" sequence="10"/>
+    <menuitem id="menu_crm_co_hoi" name="Cơ hội khách hàng" parent="menu_crm_root" action="action_crm_co_hoi" sequence="1"/>
+</odoo>

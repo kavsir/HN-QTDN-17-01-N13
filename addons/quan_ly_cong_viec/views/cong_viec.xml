@@ -1,0 +1,67 @@
+<odoo>
+    <record id="view_project_cong_viec_tree" model="ir.ui.view">
+        <field name="name">project.cong.viec.tree</field>
+        <field name="model">project.cong.viec</field>
+        <field name="arch" type="xml">
+            <tree string="Danh sách công việc" 
+                  decoration-danger="han_chot &lt; current_date and trang_thai_cong_viec != 'hoan_thanh'" 
+                  decoration-success="trang_thai_cong_viec == 'hoan_thanh'" 
+                  decoration-muted="trang_thai_cong_viec == 'huy'">
+                <field name="ten_cong_viec"/>
+                <field name="loai_cong_viec" optional="show"/>
+                <field name="nhan_vien_thuc_hien_id"/>
+                <field name="han_chot"/>
+                <field name="tien_do_phan_tram" widget="progressbar"/>
+                <field name="do_uu_tien" widget="priority" optional="show"/>
+                <field name="trang_thai_cong_viec" widget="badge" 
+                       decoration-success="trang_thai_cong_viec == 'hoan_thanh'" 
+                       decoration-info="trang_thai_cong_viec == 'dang_lam'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_project_cong_viec_form" model="ir.ui.view">
+        <field name="name">project.cong.viec.form</field>
+        <field name="model">project.cong.viec</field>
+        <field name="arch" type="xml">
+            <form string="Chi tiết công việc">
+                <header>
+                    <field name="trang_thai_cong_viec" widget="statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="ten_cong_viec" placeholder="Nhập tên đầu việc..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Phân công &amp; Lịch trình">
+                            <field name="nhan_vien_thuc_hien_id" options="{'no_create': True}"/>
+                            <field name="loai_cong_viec"/>
+                            <field name="ngay_bat_dau"/>
+                            <field name="han_chot"/>
+                        </group>
+                        <group string="Tiến độ thực hiện">
+                            <field name="do_uu_tien" widget="priority"/>
+                            <field name="tien_do_phan_tram" widget="percentpie"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Nội dung &amp; Kết quả">
+                            <field name="ghi_chu" placeholder="Ghi chú lại nội dung đã trao đổi với khách hàng..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_cong_viec" model="ir.actions.act_window">
+        <field name="name">Công việc chăm sóc</field>
+        <field name="res_model">project.cong.viec</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_project_root" name="Quản lý công việc" sequence="15"/>
+    <menuitem id="menu_project_task" name="Danh sách công việc" parent="menu_project_root" action="action_project_cong_viec" sequence="1"/>
+</odoo>

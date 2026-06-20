@@ -2,23 +2,51 @@
 <odoo>
     <data>
         <record id="view_nhan_vien_form" model="ir.ui.view">
-            <field name="name">nhan_vien</field>
+            <field name="name">nhan_vien.form</field>
             <field name="model">nhan_vien</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <field name="trang_thai_lam_viec" widget="statusbar" options="{'clickable': '1'}"/>
+                    </header>
                     <sheet>
-                        <div class="oe_read_only" style="font-size:25px">Nhân viên</div>
-                        <group col="4" string="Thông tin chung">
-                            <field name="ho_ten_dem"/>
-                            <field name="ten"/>
-                            <field name="ho_va_ten"/>
-                            <field name="ma_dinh_danh"/>
-                            <field name="ngay_sinh"/>
-                            <field name="tuoi"/>
-                            <field name="so_nguoi_bang_tuoi"/>
-                            <field name="que_quan"/>
-                            <field name="email"/>
-                            <field name="anh" widget="image"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options="{'terminate_button_type': 'archive'}"/>
+                            </button>
+                        </div>
+                        <div class="oe_read_only" style="font-size:25px; font-weight: bold; margin-bottom: 10px;">HỒ SƠ NHÂN VIÊN</div>
+                        <group>
+                            <group string="Thông tin chung" col="2">
+                                <field name="ho_ten_dem"/>
+                                <field name="ten"/>
+                                <field name="ho_va_ten"/>
+                                <field name="ma_dinh_danh"/>
+                                <field name="ngay_sinh"/>
+                                <field name="tuoi"/>
+                                <field name="so_nguoi_bang_tuoi"/>
+                                <field name="que_quan"/>
+                                <field name="email"/>
+                                <field name="so_dien_thoai"/>
+                            </group>
+                            <group string="Thông tin công tác" col="2">
+                                <field name="available_user_ids" invisible="1"/>
+                                <field name="user_id" options="{'no_create': True}" domain="[('id', 'in', available_user_ids)]"/>
+                                <field name="don_vi_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="chuc_vu_id" options="{'no_create': True, 'no_open': True}" domain="[('don_vi_id', '=', don_vi_id)]"/>
+                                <field name="quan_ly_id" options="{'no_create': True}"/>
+                                <field name="anh" widget="image" class="oe_avatar" style="max-width: 150px; max-height: 150px;"/>
+                            </group>
+                        </group>
+                        <group string="Thông tin Hợp đồng lao động">
+                            <group col="2">
+                                <field name="loai_hop_dong" widget="radio" options="{'horizontal': true}"/>
+                                <field name="thoi_han_hop_dong" options="{'no_create': True}"/>
+                            </group>
+                            <group col="2">
+                                <field name="ngay_bat_dau_hd"/>
+                                <field name="ngay_ket_thuc_hd" attrs="{'invisible': [('thoi_han_hop_dong', '=', 'vo_thoi_han')]}"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string="Danh sách lịch sử công tác">
@@ -29,26 +57,58 @@
                             </page>
                         </notebook>
                     </sheet>
-                    
                 </form>
             </field>
         </record>
 
         <record id="view_nhan_vien_tree" model="ir.ui.view">
-            <field name="name">nhan_vien</field>
+            <field name="name">nhan_vien.tree</field>
             <field name="model">nhan_vien</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree string="Danh sách nhân viên" decoration-muted="trang_thai_lam_viec == 'da_nghi'">
                     <field name="ma_dinh_danh"/>
-                    <field name="ho_ten_dem"/>
-                    <field name="ten"/>
                     <field name="ho_va_ten"/>
-                    <field name="ngay_sinh"/>
+                    <field name="don_vi_id"/>
+                    <field name="chuc_vu_id"/>
                     <field name="tuoi"/>
-                    <field name="so_nguoi_bang_tuoi"/>
-                    <field name="que_quan"/>
+                    <field name="so_dien_thoai"/>
                     <field name="email"/>
+                    <field name="trang_thai_lam_viec" widget="badge" decoration-success="trang_thai_lam_viec == 'dang_lam'" decoration-danger="trang_thai_lam_viec == 'da_nghi'" decoration-warning="trang_thai_lam_viec == 'nghi_phep'"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="view_nhan_vien_kanban" model="ir.ui.view">
+            <field name="name">nhan_vien.kanban</field>
+            <field name="model">nhan_vien</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="don_vi_id" class="o_kanban_small_column">
+                    <field name="id"/>
+                    <field name="ho_va_ten"/>
+                    <field name="ma_dinh_danh"/>
+                    <field name="chuc_vu_id"/>
+                    <field name="email"/>
+                    <field name="anh"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                                <t t-if="record.anh.raw_value">
+                                    <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image:url('#{kanban_image('nhan_vien', 'anh', record.id.raw_value)}')"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="o_kanban_image_fill_left o_kanban_image_neutral"/>
+                                </t>
+                                <div class="oe_kanban_details d-flex flex-column justify-content-between">
+                                    <div>
+                                        <strong class="o_kanban_record_title"><field name="ho_va_ten"/></strong>
+                                        <div class="text-muted">Mã: <field name="ma_dinh_danh"/></div>
+                                        <div><field name="chuc_vu_id"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
             </field>
         </record>
 
@@ -58,21 +118,70 @@
                 <search>
                     <field name="ma_dinh_danh"/>
                     <field name="ho_va_ten"/>
-                    <field name="ngay_sinh"/>
-                    <field name="tuoi"/>
-                    <field name="que_quan"/>
-                    <field name="email"/>
+                    <field name="don_vi_id"/>
+                    <field name="chuc_vu_id"/>
+                    <filter string="Đang làm việc" name="active_employee" domain="[('trang_thai_lam_viec', '=', 'dang_lam')]"/>
+                    <filter string="Đã nghỉ việc" name="inactive_employee" domain="[('trang_thai_lam_viec', '=', 'da_nghi')]"/>
+                    <separator/>
+                    <filter string="Hồ sơ đã lưu trữ (Nghỉ việc)" name="inactive" domain="[('active', '=', False)]"/>
+                    <group expand="0" string="Gom nhóm theo">
+                        <filter string="Phòng ban" name="group_by_don_vi" context="{'group_by': 'don_vi_id'}"/>
+                        <filter string="Chức vụ" name="group_by_chuc_vu" context="{'group_by': 'chuc_vu_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>
+        <record id="view_nhan_vien_graph" model="ir.ui.view">
+            <field name="name">nhan_vien.graph</field>
+            <field name="model">nhan_vien</field>
+            <field name="arch" type="xml">
+                <graph string="Thống kê nhân sự theo phòng ban" type="bar" sample="1">
+                    <field name="don_vi_id" type="row"/>
+                    <field name="id" type="measure"/>
+                </graph>
+            </field>
+        </record>
 
+        <record id="view_nhan_vien_pivot" model="ir.ui.view">
+            <field name="name">nhan_vien.pivot</field>
+            <field name="model">nhan_vien</field>
+            <field name="arch" type="xml">
+                <pivot string="Phân tích tổng quan nhân sự" sample="1">
+                    <field name="don_vi_id" type="row"/>
+                    <field name="chuc_vu_id" type="col"/>
+                    <field name="tuoi" type="measure"/>
+                </pivot>
+            </field>
+        </record>
         <record id="action_nhan_vien" model="ir.actions.act_window">
             <field name="name">Nhân viên</field>
             <field name="res_model">nhan_vien</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref = "nhan_vien_search"/>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="nhan_vien_search"/>
+        </record>
+        <record id="action_nhan_su_dashboard" model="ir.actions.act_window">
+            <field name="name">Dashboard Nhân sự</field>
+            <field name="res_model">nhan_vien</field>
+            <field name="view_mode">graph,pivot</field> <field name="context">{'search_default_active_employee': 1}</field> </record>
+
+        <menuitem id="menu_root" name="Quản lý nhân sự" sequence="10"/>
+
+        <menuitem id="menu_nhan_su_dashboard" 
+                  name="Báo cáo &amp; KPIs" 
+                  parent="nhan_su.menu_root" 
+                  action="action_nhan_su_dashboard" 
+                  sequence="90"/>
+
+        <record id="view_users_tree_inherit_hr" model="ir.ui.view">
+            <field name="name">res.users.tree.inherit.hr</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='login']" position="after">
+                    <field name="don_vi_id"/>
+                    <field name="chuc_vu_id"/>
+                </xpath>
+            </field>
         </record>
     </data>
 </odoo>
-        
-    

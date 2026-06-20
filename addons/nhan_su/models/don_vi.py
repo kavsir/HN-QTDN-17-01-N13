@@ -8,3 +8,4 @@ class DonVi(models.Model):
 
     ma_don_vi = fields.Char("Mã đơn vị", required=True)
     ten_don_vi = fields.Char("Tên đơn vị", required=True)
+    nhan_vien_ids = fields.One2many('nhan_vien', 'don_vi_id', string="Danh sách nhân viên")

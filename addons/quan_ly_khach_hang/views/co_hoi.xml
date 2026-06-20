@@ -1,0 +1,91 @@
+<odoo>
+    <!-- GIAO DIỆN DANH SÁCH (Tree View) -->
+    <record id="view_crm_co_hoi_tree" model="ir.ui.view">
+        <field name="name">crm.co.hoi.tree</field>
+        <field name="model">crm.co.hoi</field>
+        <field name="arch" type="xml">
+            <!-- Thêm màu sắc cho cả dòng tùy theo trạng thái -->
+            <tree string="Cơ hội kinh doanh" decoration-success="trang_thai=='thanh_cong'" decoration-danger="trang_thai=='that_bai'" decoration-muted="trang_thai=='moi'">
+                <field name="ten_co_hoi"/>
+                <field name="ten_doi_tac"/>
+                <field name="nguon_khach_hang" optional="show"/>
+                <field name="gia_tri_bao_gia"/>
+                <field name="xac_suat_thanh_cong" widget="progressbar"/>
+                <field name="muc_do_uu_tien" widget="priority" optional="show"/>
+                <field name="nhan_vien_phu_trach_id"/>
+                <!-- Badge tạo màu nền cho trạng thái -->
+                <field name="trang_thai" widget="badge" 
+                       decoration-success="trang_thai == 'thanh_cong'" 
+                       decoration-danger="trang_thai == 'that_bai'" 
+                       decoration-warning="trang_thai == 'cho_duyet'" 
+                       decoration-info="trang_thai in ('moi', 'tiep_can')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- GIAO DIỆN CHI TIẾT (Form View) -->
+    <record id="view_crm_co_hoi_form" model="ir.ui.view">
+        <field name="name">crm.co.hoi.form</field>
+        <field name="model">crm.co.hoi</field>
+        <field name="arch" type="xml">
+            <form string="Chi tiết cơ hội">
+                <header>
+                    <field name="trang_thai" widget="statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <!-- Cụm chức năng ưu tiên ở góc phải -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="ten_co_hoi" placeholder="VD: Triển khai phần mềm cho ABC..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Phân loại &amp; Liên hệ">
+                            <field name="loai_khach_hang" widget="radio" options="{'horizontal': true}"/>
+                            <field name="ten_doi_tac"/>
+                            <field name="dien_thoai"/>
+                            <field name="email"/>
+                            <field name="nguon_khach_hang"/>
+                        </group>
+                        <group string="Kinh doanh &amp; Mục tiêu">
+                            <field name="gia_tri_bao_gia"/>
+                            <field name="ngay_du_kien_chot"/>
+                            <field name="xac_suat_thanh_cong" widget="percentpie"/>
+                            <field name="muc_do_uu_tien" widget="priority"/>
+                            <field name="nhan_vien_phu_trach_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_crm_co_hoi" model="ir.actions.act_window">
+        <field name="name">Cơ hội khách hàng</field>
+        <field name="res_model">crm.co.hoi</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- KẾ THỪA VÀO BẢNG CÔNG VIỆC -->
+    <record id="view_cong_viec_tree_inherit_crm" model="ir.ui.view">
+        <field name="name">project.cong.viec.tree.inherit.crm</field>
+        <field name="model">project.cong.viec</field>
+        <field name="inherit_id" ref="quan_ly_cong_viec.view_project_cong_viec_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='ten_cong_viec']" position="after">
+                <field name="co_hoi_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_cong_viec_form_inherit_crm" model="ir.ui.view">
+        <field name="name">project.cong.viec.form.inherit.crm</field>
+        <field name="model">project.cong.viec</field>
+        <field name="inherit_id" ref="quan_ly_cong_viec.view_project_cong_viec_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='ten_cong_viec']" position="after">
+                <field name="co_hoi_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

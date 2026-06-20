@@ -223,11 +223,20 @@ export class Dropdown extends Component {
      * @param {DropdownStateChangedPayload} args
      */
     onDropdownStateChanged(args) {
+        // Ignore invalid emitters early.
+        if (!args || !args.emitter || !args.emitter.el) {
+            return;
+        }
+
         if (this.el.contains(args.emitter.el)) {
             // Do not listen to events emitted by self or children
             return;
         }
 
+        // Ignore detached emitters.
+        if (!args.emitter.el.parentElement) {
+            return;
+        }
         // Emitted by direct siblings ?
         if (args.emitter.el.parentElement === this.el.parentElement) {
             // Sync the group status

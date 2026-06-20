@@ -186,6 +186,25 @@ QUnit.module("Components", ({ beforeEach }) => {
         assert.containsNone(parent.el, ".dropdown-menu");
     });
 
+    QUnit.test("ignores invalid emitter elements on dropdown state change", async (assert) => {
+        class Parent extends owl.Component {}
+        Parent.template = owl.tags.xml`<Dropdown/>`;
+        env = await makeTestEnv();
+        parent = await mount(Parent, { env, target });
+
+        await click(parent.el, "button.dropdown-toggle");
+        assert.containsOnce(parent.el, ".dropdown-menu");
+
+        const detachedElement = document.createElement("div");
+        Dropdown.bus.trigger("state-changed", {
+            emitter: { el: detachedElement },
+            newState: { open: true, groupIsOpen: true },
+        });
+        await nextTick();
+
+        assert.containsOnce(parent.el, ".dropdown-menu");
+    });
+
     QUnit.test("close on item selection", async (assert) => {
         class Parent extends owl.Component {}
         Parent.template = owl.tags.xml`
