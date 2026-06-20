@@ -48,14 +48,51 @@ class CoHoiKinhDoanh(models.Model):
     ], string="Trạng thái", default='moi')
 
     nhan_vien_phu_trach_id = fields.Many2one('nhan_vien', string="Nhân viên phụ trách")
+    # Chèn dòng này ngay bên dưới trường nhan_vien_phu_trach_id
+    don_vi_id = fields.Many2one(
+        'don_vi', 
+        string="Phòng ban phụ trách", 
+        related='nhan_vien_phu_trach_id.don_vi_id', 
+        store=True
+    )
+    # 🛠️ BỔ SUNG: Mối quan hệ một-nhiều để hiển thị danh sách công việc liên quan
+    project_cong_viec_ids = fields.One2many('project.cong.viec', 'co_hoi_id', string="Công việc liên quan")
 
-    # Logic 1: Tự động chuyển trạng thái khi giao việc
-    @api.onchange('nhan_vien_phu_trach_id')
-    def _onchange_nhan_vien_phu_trach(self):
-        if self.nhan_vien_phu_trach_id and self.trang_thai == 'moi':
-            self.trang_thai = 'tiep_can'
+    # 🛠️ BỔ SUNG: Tự động cập nhật xác suất thành công theo tiến trình cơ hội khách hàng
+    @api.onchange('trang_thai')
+    def _onchange_trang_thai(self):
+        for record in self:
+            if record.trang_thai == 'moi':
+                record.xac_suat_thanh_cong = 10
+            elif record.trang_thai == 'tiep_can':
+                record.xac_suat_thanh_cong = 30
+            elif record.trang_thai == 'bao_gia':
+                record.xac_suat_thanh_cong = 50
+            elif record.trang_thai == 'cho_duyet':
+                record.xac_suat_thanh_cong = 80
+            elif record.trang_thai == 'thanh_cong':
+                record.xac_suat_thanh_cong = 100
+            elif record.trang_thai == 'that_bai':
+                record.xac_suat_thanh_cong = 0
 
-# Kế thừa ngược (Giữ nguyên để kết nối với module Công việc)
+    so_luong_cong_viec = fields.Integer(string="Số công việc", compute="_compute_so_luong_cong_viec")
+
+    def _compute_so_luong_cong_viec(self):
+        for record in self:
+
+            record.so_luong_cong_viec = self.env['project.cong.viec'].search_count([('co_hoi_id', '=', record.id)])
+
+    def action_view_cong_viec(self):
+        self.ensure_one()
+        return {
+            'name': f'Công việc: {self.ten_co_hoi}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'project.cong.viec',
+            'view_mode': 'kanban,tree,form,graph,pivot',
+            'domain': [('co_hoi_id', '=', self.id)], 
+            'context': {'default_co_hoi_id': self.id}, 
+        }
 class KeThemCongViec(models.Model):
     _inherit = 'project.cong.viec'
+    
     co_hoi_id = fields.Many2one('crm.co.hoi', string="Khách hàng", ondelete='cascade')

@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class CongViecChamSoc(models.Model):
     _name = 'project.cong.viec'
@@ -38,15 +39,32 @@ class CongViecChamSoc(models.Model):
 
     # 4. Liên kết gốc (HRM)
     nhan_vien_thuc_hien_id = fields.Many2one('nhan_vien', string="Người thực hiện")
-    
-    @api.onchange('trang_thai_cong_viec')
-    def _onchange_trang_thai(self):
-        if self.trang_thai_cong_viec == 'hoan_thanh':
-            self.tien_do_phan_tram = 100
 
-    # Logic 2: Khi nhân viên nhập tiến độ 100%, tự động chuyển trạng thái sang "Hoàn thành"
+    # ==================== LOGIC TỰ ĐỘNG HÓA NÂNG CAO ====================
+
+    @api.onchange('trang_thai_cong_viec')
+    def _onchange_trang_thai_cong_viec(self):
+        """ Thay đổi tiến độ tương ứng theo trạng thái """
+        for record in self:
+            if record.trang_thai_cong_viec == 'hoan_thanh':
+                record.tien_do_phan_tram = 100
+            elif record.trang_thai_cong_viec == 'chua_lam':
+                record.tien_do_phan_tram = 0
+
     @api.onchange('tien_do_phan_tram')
-    def _onchange_tien_do(self):
-        if self.tien_do_phan_tram >= 100:
-            self.tien_do_phan_tram = 100
-            self.trang_thai_cong_viec = 'hoan_thanh'
+    def _onchange_tien_do_phan_tram(self):
+        """ Tự động nhảy trạng thái dựa trên % tiến độ nhập vào """
+        for record in self:
+            if record.tien_do_phan_tram >= 100:
+                record.trang_thai_cong_viec = 'hoan_thanh'
+            elif record.tien_do_phan_tram > 0 and record.trang_thai_cong_viec == 'chua_lam':
+                record.trang_thai_cong_viec = 'dang_lam'
+            elif record.tien_do_phan_tram == 0 and record.trang_thai_cong_viec == 'dang_lam':
+                record.trang_thai_cong_viec = 'chua_lam'
+
+    @api.constrains('tien_do_phan_tram')
+    def _check_tien_do_phan_tram(self):
+        """ Ngăn chặn nhập số % tiến độ phi lý """
+        for record in self:
+            if record.tien_do_phan_tram < 0 or record.tien_do_phan_tram > 100:
+                raise ValidationError("Tiến độ hoàn thành công việc bắt buộc phải nằm trong khoảng từ 0% đến 100%!")

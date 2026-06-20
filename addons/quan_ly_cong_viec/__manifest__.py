@@ -9,6 +9,7 @@
 
     'depends': ['base', 'nhan_su'],
     'data': [
+        'security/project_security.xml',
         'security/ir.model.access.csv',
         'views/cong_viec.xml',
     ],

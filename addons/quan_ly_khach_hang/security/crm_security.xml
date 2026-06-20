@@ -1,0 +1,28 @@
+<odoo>
+    <data noupdate="1">
+        <record id="rule_crm_co_hoi_user" model="ir.rule">
+            <field name="name">Nhân viên: Chỉ quản lý khách hàng được giao</field>
+            <field name="model_id" ref="model_crm_co_hoi"/>
+            <field name="domain_force">[('nhan_vien_phu_trach_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('nhan_su.group_nhan_su_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_crm_co_hoi_manager" model="ir.rule">
+            <field name="name">Trưởng phòng: Quản lý khách hàng phòng ban</field>
+            <field name="model_id" ref="model_crm_co_hoi"/>
+            <field name="domain_force">[('nhan_vien_phu_trach_id.don_vi_id.nhan_vien_ids.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('nhan_su.group_nhan_su_manager'))]"/>
+        </record>
+
+        <record id="rule_crm_co_hoi_admin" model="ir.rule">
+            <field name="name">Admin: Toàn quyền khách hàng</field>
+            <field name="model_id" ref="model_crm_co_hoi"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('nhan_su.group_nhan_su_admin'))]"/>
+        </record>
+    </data>
+</odoo>

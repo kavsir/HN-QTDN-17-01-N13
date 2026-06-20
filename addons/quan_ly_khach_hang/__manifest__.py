@@ -15,6 +15,7 @@
     # Module bắt buộc phải có để hệ thống chạy đúng dữ liệu gốc nhân sự
     'depends': ['base', 'nhan_su', 'quan_ly_cong_viec'], # BẮT BUỘC phải có 'quan_ly_cong_viec' ở đây
     'data': [
+        'security/crm_security.xml',
         'security/ir.model.access.csv',
         'views/co_hoi.xml',
         'views/menu.xml',
