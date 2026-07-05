@@ -7,10 +7,10 @@
     'version': '0.1',
     'license': 'LGPL-3',
 
-    'depends': ['base', 'nhan_su'],
+    'depends': ['base', 'nhan_su','mail'],
     'data': [
         'security/project_security.xml',
         'security/ir.model.access.csv',
-        'views/cong_viec.xml',
+        'views/cong_viec.xml',  
     ],
 }

@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_crm_co_hoi,access_crm_co_hoi,model_crm_co_hoi,base.group_user,1,1,1,1
 access_project_cong_viec,access_project_cong_viec,model_project_cong_viec,base.group_user,1,1,1,1
+access_cong_viec_mau_admin,cong_viec_mau,model_cong_viec_mau,nhan_su.group_nhan_su_admin,1,1,1,1

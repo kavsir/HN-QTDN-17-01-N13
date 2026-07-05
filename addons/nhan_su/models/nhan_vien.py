@@ -255,16 +255,21 @@ class NhanVien(models.Model):
         # Nếu có bất kỳ sự thay đổi nào về thông tin định danh, tự động cập nhật lại tên User
         if any(field in vals for field in ['user_id', 'chuc_vu_id', 'don_vi_id', 'ho_ten_dem', 'ten']):
             self._sync_user_display_name()
+
+        # FIX: logic ẩn hồ sơ khi nghỉ việc trước đây CHỈ nằm trong @api.onchange,
+        # nên chỉ có hiệu lực khi người dùng thao tác trực tiếp trên form UI.
+        # Nếu HR cập nhật trạng thái qua danh sách (list view inline edit), import
+        # Excel, hoặc gọi qua API/XML-RPC thì active KHÔNG được cập nhật -> hồ sơ
+        # nhân viên đã nghỉ vẫn hiển thị "đang hoạt động" trong các domain lựa chọn
+        # (vd. domain chọn nhân_vien_thuc_hien_id bên module Công việc), dẫn tới
+        # rủi ro giao việc/khách hàng mới cho người đã nghỉ. Đưa xuống write() để
+        # đảm bảo áp dụng cho MỌI đường cập nhật dữ liệu.
+        if 'trang_thai_lam_viec' in vals:
+            for record in self:
+                new_active = record.trang_thai_lam_viec != 'da_nghi'
+                if record.active != new_active:
+                    record.active = new_active
         return res
-    
-    @api.onchange('trang_thai_lam_viec')
-    def _onchange_trang_thai_lam_viec(self):
-        """ Tự động ẩn hồ sơ khi nhân viên Đã nghỉ việc """
-        for record in self:
-            if record.trang_thai_lam_viec == 'da_nghi':
-                record.active = False
-            else:
-                record.active = True
 
 class ResUsersInherit(models.Model):
     _inherit = 'res.users'

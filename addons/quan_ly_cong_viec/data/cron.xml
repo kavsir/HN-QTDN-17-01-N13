@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="cron_nhac_nho_cong_viec_qua_han" model="ir.cron">
+            <field name="name">Quản lý công việc: Nhắc nhở việc quá hạn</field>
+            <field name="model_id" ref="model_project_cong_viec"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_nhac_nho_qua_han()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

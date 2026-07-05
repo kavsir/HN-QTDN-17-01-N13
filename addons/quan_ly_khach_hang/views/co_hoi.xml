@@ -105,9 +105,22 @@
                         <group string="Kinh doanh &amp; Mục tiêu">
                             <field name="gia_tri_bao_gia"/>
                             <field name="ngay_du_kien_chot"/>
-                            <field name="xac_suat_thanh_cong"/>
-                            <field name="muc_do_uu_tien" widget="priority"/>
-                            <field name="nhan_vien_phu_trach_id" options="{'no_create': True}"/>
+                            
+                            <field name="xac_suat_thanh_cong" attrs="{'readonly': [('id', '!=', False)]}" groups="!base.group_erp_manager"/>
+                            <field name="xac_suat_thanh_cong" groups="base.group_erp_manager"/>
+
+                            <field name="muc_do_uu_tien" widget="priority" attrs="{'readonly': [('id', '!=', False)]}" groups="!base.group_erp_manager"/>
+                            <field name="muc_do_uu_tien" widget="priority" groups="base.group_erp_manager"/>
+
+                            <field name="nhan_vien_phu_trach_id" 
+                                   options="{'no_create': True, 'no_open': True}"
+                                   domain="[('trang_thai_lam_viec', '=', 'dang_lam'), ('don_vi_id.ten_don_vi', 'ilike', 'Kinh Doanh')]"
+                                   attrs="{'readonly': [('id', '!=', False)]}"
+                                   groups="!base.group_erp_manager"/>
+                            <field name="nhan_vien_phu_trach_id" 
+                                   options="{'no_create': True, 'no_open': True}"
+                                   domain="[('trang_thai_lam_viec', '=', 'dang_lam'), ('don_vi_id.ten_don_vi', 'ilike', 'Kinh Doanh')]"
+                                   groups="base.group_erp_manager"/>
                         </group>
                     </group>
                     
@@ -117,7 +130,11 @@
                                 <tree editable="bottom">
                                     <field name="ten_cong_viec"/>
                                     <field name="loai_cong_viec"/>
-                                    <field name="nhan_vien_thuc_hien_id" options="{'no_create': True}"/>
+                                    
+                                    <field name="nhan_vien_thuc_hien_id" 
+                                           options="{'no_create': True, 'no_open': True}" 
+                                           domain="[('trang_thai_lam_viec', '=', 'dang_lam')]"/>
+                                           
                                     <field name="han_chot"/>
                                     <field name="tien_do_phan_tram" widget="progressbar"/>
                                     <field name="trang_thai_cong_viec" widget="badge"
@@ -127,6 +144,7 @@
                             </field>
                         </page>
                     </notebook>
+
                 </sheet>
             </form>
         </field>
@@ -200,17 +218,22 @@
         </field>
     </record>
 
-    <record id="action_project_du_an_dang_lam" model="ir.actions.act_window">
-        <field name="name">Dự án đang triển khai</field>
+    <!-- ĐỔI TÊN: bản gốc đặt tên "Dự án đang triển khai" cho action này, nhưng
+         res_model thực chất là crm.co.hoi (Cơ hội kinh doanh), KHÔNG phải Dự án.
+         Vì module Quản lý công việc đã có model project.du_an thật sự (nhóm các
+         Task lại), để tránh gây nhầm lẫn hai khái niệm "Dự án", đổi tên action
+         và menu này về đúng bản chất: Cơ hội đang triển khai. -->
+    <record id="action_co_hoi_dang_trien_khai" model="ir.actions.act_window">
+        <field name="name">Cơ hội đang triển khai</field>
         <field name="res_model">crm.co.hoi</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="domain">[('trang_thai', 'not in', ('thanh_cong', 'that_bai'))]</field>
         <field name="context">{'group_by': 'trang_thai'}</field>
     </record>
 
-    <menuitem id="menu_project_du_an" 
-              name="Dự án đang triển khai" 
-              parent="quan_ly_cong_viec.menu_project_root" 
-              action="action_project_du_an_dang_lam" 
+    <menuitem id="menu_co_hoi_dang_trien_khai"
+              name="Cơ hội đang triển khai"
+              parent="quan_ly_cong_viec.menu_project_root"
+              action="action_co_hoi_dang_trien_khai"
               sequence="0"/>
 </odoo>
