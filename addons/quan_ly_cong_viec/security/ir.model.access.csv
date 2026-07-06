@@ -1,2 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_project_cong_viec,access_project_cong_viec,model_project_cong_viec,base.group_user,1,1,1,1
+access_project_cong_viec_user,project.cong.viec.user,model_project_cong_viec,nhan_su.group_nhan_su_user,1,1,1,0
+access_project_cong_viec_manager,project.cong.viec.manager,model_project_cong_viec,nhan_su.group_nhan_su_manager,1,1,1,1
+access_project_du_an_user,project.du_an.user,model_project_du_an,nhan_su.group_nhan_su_user,1,0,0,0
+access_project_du_an_manager,project.du_an.manager,model_project_du_an,nhan_su.group_nhan_su_manager,1,1,1,1

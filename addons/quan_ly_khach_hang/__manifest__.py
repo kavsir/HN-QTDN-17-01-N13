@@ -9,15 +9,15 @@
     'author': "Nhóm 13 - FIT-DNU",
     'website': "https://ttdn1501.aiotlabdnu.xyz/web",
     'category': 'Sales/CRM',
-    'version': '0.1',
+    'version': '0.2',
     'license': 'LGPL-3',
 
     # Module bắt buộc phải có để hệ thống chạy đúng dữ liệu gốc nhân sự
-    'depends': ['base', 'nhan_su', 'quan_ly_cong_viec'], # BẮT BUỘC phải có 'quan_ly_cong_viec' ở đây
+    'depends': ['base', 'mail', 'nhan_su', 'quan_ly_cong_viec'],  # BẮT BUỘC phải có 'quan_ly_cong_viec' ở đây
     'data': [
         'security/crm_security.xml',
-        'views/cong_viec_mau_view.xml',
         'security/ir.model.access.csv',
+        'views/cong_viec_mau_view.xml',
         'views/co_hoi.xml',
         'views/menu.xml',
     ],

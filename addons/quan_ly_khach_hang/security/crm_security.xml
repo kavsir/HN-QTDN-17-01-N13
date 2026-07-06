@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
+        <!--
+            GHI CHÚ QUAN TRỌNG:
+            File này được __manifest__.py trỏ tới ('security/crm_security.xml') nhưng
+            trước đây KHÔNG tồn tại trong module. Hậu quả: model crm.co.hoi không có
+            bất kỳ ir.rule nào -> mọi nhân viên có quyền base.group_user (tức toàn bộ
+            group_nhan_su_user) đều đọc/sửa được TẤT CẢ cơ hội của TẤT CẢ nhóm sales.
+            Đây chính là "Rủi ro phân quyền sai lệch giữa các nhóm sales" nêu trong
+            yêu cầu nghiệp vụ. File này bổ sung ir.rule còn thiếu, tái sử dụng đúng
+            3 nhóm quyền đã khai báo bên module nhan_su (group_nhan_su_user/manager/admin)
+            để đảm bảo nguyên tắc: nhân viên & phòng ban lấy từ HRM, phân quyền cũng
+            phải đồng bộ theo cơ cấu HRM.
+        -->
 
         <!-- Nhân viên kinh doanh: chỉ thấy cơ hội mình được phân công phụ trách -->
         <record id="rule_co_hoi_user" model="ir.rule">

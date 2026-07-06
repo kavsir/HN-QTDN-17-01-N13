@@ -80,9 +80,34 @@
         <field name="arch" type="xml">
             <form string="Chi tiết cơ hội">
                 <header>
-                    <field name="trang_thai" widget="statusbar" options="{'clickable': '1'}"/>
+                    <!-- BỔ SUNG: nút gửi duyệt - hiện khi đang báo giá, chưa gửi duyệt -->
+                    <button name="action_gui_duyet_bao_gia" type="object"
+                            string="Gửi duyệt / Chốt hợp đồng"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('trang_thai', 'not in', ('bao_gia',))]}"/>
+                    <!-- BỔ SUNG: 2 nút chỉ Ban Giám đốc/Admin mới thấy, chỉ hiện khi đang chờ duyệt -->
+                    <button name="action_bgd_phe_duyet" type="object"
+                            string="✔ Phê duyệt (BGĐ)"
+                            class="oe_highlight"
+                            groups="nhan_su.group_nhan_su_admin"
+                            attrs="{'invisible': [('trang_thai', '!=', 'cho_duyet')]}"/>
+                    <button name="action_bgd_tu_choi" type="object"
+                            string="✘ Từ chối (BGĐ)"
+                            groups="nhan_su.group_nhan_su_admin"
+                            attrs="{'invisible': [('trang_thai', '!=', 'cho_duyet')]}"/>
+                    <field name="trang_thai" widget="statusbar" options="{'clickable': '0'}"/>
                 </header>
                 <sheet>
+                    <!-- BỔ SUNG: banner cảnh báo ngay khi báo giá vượt hạn mức, trước khi kịp gửi duyệt -->
+                    <div class="alert alert-warning" role="alert"
+                         attrs="{'invisible': [('can_duyet_bgd', '=', False)]}">
+                        ⚠ Giá trị báo giá đang <b>vượt hạn mức</b> tự quyết -
+                        bắt buộc phải được <b>Ban Giám đốc phê duyệt</b> trước khi chốt Thành công.
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': ['|', ('trang_thai', '!=', 'bao_gia'), ('ly_do_tu_choi_bgd', '=', False)]}">
+                        BGĐ đã từ chối báo giá trước đó. Lý do: <field name="ly_do_tu_choi_bgd" readonly="1" nolabel="1"/>
+                    </div>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_view_cong_viec" icon="fa-tasks">
                             <field string="Công việc" name="so_luong_cong_viec" widget="statinfo"/>
@@ -103,6 +128,8 @@
                             <field name="nguon_khach_hang"/>
                         </group>
                         <group string="Kinh doanh &amp; Mục tiêu">
+                            <field name="can_duyet_bgd" invisible="1"/>
+                            <field name="da_duyet_bgd" invisible="1"/>
                             <field name="gia_tri_bao_gia"/>
                             <field name="ngay_du_kien_chot"/>
                             
@@ -178,6 +205,44 @@
                 <field name="gia_tri_bao_gia" type="measure"/>
             </pivot>
         </field>
+    </record>
+
+    <!-- BỔ SUNG: Dashboard theo Loại khách hàng -->
+    <record id="view_crm_co_hoi_graph_loai_kh" model="ir.ui.view">
+        <field name="name">crm.co.hoi.graph.loai.kh</field>
+        <field name="model">crm.co.hoi</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê theo Loại khách hàng" type="pie">
+                <field name="loai_khach_hang"/>
+                <field name="gia_tri_bao_gia" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_crm_dashboard_loai_kh" model="ir.actions.act_window">
+        <field name="name">Thống kê theo Loại khách hàng</field>
+        <field name="res_model">crm.co.hoi</field>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_crm_co_hoi_graph_loai_kh"/>
+    </record>
+
+    <!-- BỔ SUNG: Dashboard theo Nguồn khách hàng -->
+    <record id="view_crm_co_hoi_graph_nguon_kh" model="ir.ui.view">
+        <field name="name">crm.co.hoi.graph.nguon.kh</field>
+        <field name="model">crm.co.hoi</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê theo Nguồn khách hàng" type="pie">
+                <field name="nguon_khach_hang"/>
+                <field name="gia_tri_bao_gia" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_crm_dashboard_nguon_kh" model="ir.actions.act_window">
+        <field name="name">Thống kê theo Nguồn khách hàng</field>
+        <field name="res_model">crm.co.hoi</field>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_crm_co_hoi_graph_nguon_kh"/>
     </record>
 
     <record id="view_cong_viec_tree_inherit_crm" model="ir.ui.view">

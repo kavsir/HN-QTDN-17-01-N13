@@ -121,20 +121,34 @@
         <field name="name">project.cong.viec.kanban</field>
         <field name="model">project.cong.viec</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="trang_thai_cong_viec" class="o_kanban_small_column">
+            <!-- FIX: bỏ default_group_by="trang_thai_cong_viec" - trước đây
+                 Kanban tự nhóm theo trạng thái, khiến task vừa hoàn thành bị
+                 dời sang cột khác (thường nằm ngoài màn hình), gây cảm giác
+                 "biến mất" khỏi danh sách đang xem. Giờ Kanban hiển thị TẤT
+                 CẢ task chung 1 danh sách; trạng thái thể hiện bằng badge màu
+                 ngay trên card (giữ được cột riêng thể hiện trạng thái, không
+                 cần group by để phân biệt). Người dùng vẫn có thể tự chọn
+                 "Group By > Trạng thái" trong ô tìm kiếm nếu muốn xem theo cột. -->
+            <kanban class="o_kanban_small_column">
                 <field name="id"/>
                 <field name="ten_cong_viec"/>
                 <field name="nhan_vien_thuc_hien_id"/>
                 <field name="han_chot"/>
                 <field name="do_uu_tien"/>
                 <field name="tien_do_phan_tram"/>
+                <field name="trang_thai_cong_viec"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click d-flex flex-column justify-content-between p-3" style="border-radius: 6px; margin-bottom: 8px;">
                             <div>
-                                <strong class="o_kanban_record_title" style="font-size: 14px; color: #1F2937;">
-                                    <field name="ten_cong_viec"/>
-                                </strong>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <strong class="o_kanban_record_title" style="font-size: 14px; color: #1F2937;">
+                                        <field name="ten_cong_viec"/>
+                                    </strong>
+                                    <span t-attf-class="badge badge-pill #{record.trang_thai_cong_viec.raw_value == 'hoan_thanh' ? 'badge-success' : record.trang_thai_cong_viec.raw_value == 'huy' ? 'badge-secondary' : record.trang_thai_cong_viec.raw_value == 'dang_lam' ? 'badge-info' : 'badge-light'}">
+                                        <field name="trang_thai_cong_viec"/>
+                                    </span>
+                                </div>
                                 <div class="text-muted" style="font-size: 12px; margin-top: 4px;">
                                     Người làm: <span style="font-weight: 500; color: #4B5563;"><field name="nhan_vien_thuc_hien_id"/></span>
                                 </div>
@@ -205,15 +219,41 @@
         </field>
     </record>
 
+    <!-- BỔ SUNG: Pivot thống kê công việc - dùng cho Dashboard quản lý -->
+    <record id="view_project_cong_viec_pivot" model="ir.ui.view">
+        <field name="name">project.cong.viec.pivot</field>
+        <field name="model">project.cong.viec</field>
+        <field name="arch" type="xml">
+            <pivot string="Thống kê Quản lý Công việc">
+                <field name="nhan_vien_thuc_hien_id" type="row"/>
+                <field name="loai_cong_viec" type="row"/>
+                <field name="trang_thai_cong_viec" type="col"/>
+                <field name="tien_do_phan_tram" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_project_cong_viec_dashboard" model="ir.actions.act_window">
+        <field name="name">Thống kê quản lý công việc</field>
+        <field name="res_model">project.cong.viec</field>
+        <field name="view_mode">pivot,graph</field>
+    </record>
+
     <record id="action_project_cong_viec" model="ir.actions.act_window">
         <field name="name">Công việc chăm sóc</field>
         <field name="res_model">project.cong.viec</field>
-        <!-- 🛠️ Bổ sung graph và pivot vào cuối chuỗi này -->
-        <field name="view_mode">kanban,tree,form,graph,pivot</field>
+        <!-- FIX: đổi 'tree' lên đầu làm view mặc định. Trước đây 'kanban' đứng
+             đầu + kanban có default_group_by="trang_thai_cong_viec" khiến task
+             vừa chuyển "Hoàn thành" bị dời sang cột kanban khác, cảm giác như
+             "biến mất" khỏi danh sách đang xem. Tree đã có cột "Trạng thái"
+             riêng (badge màu), task hoàn thành vẫn nằm nguyên trong danh sách,
+             chỉ đổi màu badge - không còn bị dời/ẩn đi đâu cả. -->
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
     </record>
 
     <menuitem id="menu_project_root" name="Quản lý công việc" sequence="15"/>
     <menuitem id="menu_project_du_an" name="Dự án" parent="menu_project_root" action="action_project_du_an" sequence="1"/>
     <menuitem id="menu_project_task" name="Danh sách công việc" parent="menu_project_root" action="action_project_cong_viec" sequence="2"/>
     <menuitem id="menu_project_qua_tai" name="Cảnh báo quá tải nhân viên" parent="menu_project_root" action="action_nhan_vien_qua_tai" sequence="3"/>
+    <menuitem id="menu_project_dashboard" name="Thống kê công việc" parent="menu_project_root" action="action_project_cong_viec_dashboard" sequence="4"/>
 </odoo>

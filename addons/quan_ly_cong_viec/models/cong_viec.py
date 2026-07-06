@@ -58,6 +58,15 @@ class CongViecChamSoc(models.Model):
 
     # 1. Thông tin chung
     ten_cong_viec = fields.Char("Tên đầu việc", required=True)
+    # BỔ SUNG: field active - trước đây model không có field này nên KHÔNG hỗ
+    # trợ lưu trữ (archive); mọi lệnh xoá (kể cả bấm 🗑 trong list nhúng bên
+    # CRM) đều là xoá vĩnh viễn. Hậu quả: nếu task đã có activity/message gắn
+    # vào (ví dụ do cron nhắc quá hạn, hoặc do luồng phê duyệt tạo) mà bị xoá
+    # thẳng, activity đó thành "mồ côi" - trỏ tới 1 record không còn tồn tại,
+    # gây lỗi "Missing Record" mỗi khi Odoo cố hiển thị nó (ví dụ chuông
+    # Activities). Thêm active + override unlink() để xoá = ẩn thay vì xoá
+    # thật, giữ nguyên vẹn activity/message liên quan.
+    active = fields.Boolean("Đang hoạt động", default=True)
     loai_cong_viec = fields.Selection([
         ('goi_dien', 'Gọi điện tư vấn'),
         ('gui_email', 'Gửi Email báo giá'),
@@ -137,6 +146,14 @@ class CongViecChamSoc(models.Model):
         if 'han_chot' in vals or 'trang_thai_cong_viec' in vals:
             vals.setdefault('da_nhac_qua_han', False)
         return super().write(vals)
+
+    def unlink(self):
+        # FIX: chặn xoá vĩnh viễn để không tạo activity/message mồ côi (xem
+        # ghi chú ở field `active`). Bấm 🗑 giờ chỉ ẩn task (active=False),
+        # không còn hiện trong danh sách/kanban/dashboard nhưng lịch sử vẫn
+        # còn nguyên, activity/message vẫn resolve được bình thường.
+        self.write({'active': False})
+        return True
 
     # ==================== FIX RỦI RO #1: NV KHÔNG CẬP NHẬT TIẾN ĐỘ ====================
     @api.model

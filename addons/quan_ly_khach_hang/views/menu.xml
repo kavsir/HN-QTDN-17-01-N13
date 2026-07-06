@@ -1,4 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_crm_root" name="Quản lý khách hàng (CRM)" sequence="10"/>
-    <menuitem id="menu_crm_co_hoi" name="Cơ hội khách hàng" parent="menu_crm_root" action="action_crm_co_hoi" sequence="1"/>
+    <data>
+        <menuitem id="menu_crm_root" name="Quản lý khách hàng" sequence="10"/>
+
+        <menuitem id="menu_crm_co_hoi" name="Cơ hội kinh doanh"
+                  parent="menu_crm_root" action="action_crm_co_hoi" sequence="1"/>
+
+        <menuitem id="menu_crm_dashboard" name="Dashboard &amp; Báo cáo" parent="menu_crm_root" sequence="2"/>
+        <menuitem id="menu_crm_dashboard_loai_kh" name="Theo Loại khách hàng"
+                  parent="menu_crm_dashboard" action="action_crm_dashboard_loai_kh" sequence="1"/>
+        <menuitem id="menu_crm_dashboard_nguon_kh" name="Theo Nguồn khách hàng"
+                  parent="menu_crm_dashboard" action="action_crm_dashboard_nguon_kh" sequence="2"/>
+
+        <menuitem id="menu_crm_danh_muc" name="Danh mục" parent="menu_crm_root" sequence="10"/>
+        <menuitem id="menu_crm_cong_viec_mau" name="Mẫu checklist công việc"
+                  parent="menu_crm_danh_muc" action="action_cong_viec_mau" sequence="1"/>
+    </data>
 </odoo>
