@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_faq_chat_log_tree" model="ir.ui.view">
+        <field name="name">hr.faq.chat.log.tree</field>
+        <field name="model">hr.faq.chat.log</field>
+        <field name="arch" type="xml">
+            <tree string="Lịch sử hỏi đáp">
+                <field name="create_date" string="Thời gian"/>
+                <field name="employee_id"/>
+                <field name="question"/>
+                <field name="found_answer" string="Có nguồn"/>
+                <field name="response_time_ms" string="Thời gian phản hồi (ms)"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_faq_chat_log_form" model="ir.ui.view">
+        <field name="name">hr.faq.chat.log.form</field>
+        <field name="model">hr.faq.chat.log</field>
+        <field name="arch" type="xml">
+            <form string="Chi tiết hỏi đáp" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <field name="create_date"/>
+                        <field name="employee_id"/>
+                        <field name="user_id"/>
+                        <field name="found_answer"/>
+                        <field name="response_time_ms"/>
+                    </group>
+                    <group string="Câu hỏi">
+                        <field name="question" nolabel="1"/>
+                    </group>
+                    <group string="Câu trả lời">
+                        <field name="answer" nolabel="1"/>
+                    </group>
+                    <group string="Nguồn trích dẫn">
+                        <field name="sources" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_faq_chat_log" model="ir.actions.act_window">
+        <field name="name">Lịch sử hỏi đáp</field>
+        <field name="res_model">hr.faq.chat.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_hr_faq_chatbot_client" model="ir.actions.client">
+        <field name="name">Trợ lý nội quy</field>
+        <field name="tag">hr_faq_chatbot.chat_action</field>
+    </record>
+
+    <menuitem id="menu_hr_faq_chatbot_root"
+              name="Trợ lý nội quy"
+              parent="hr.menu_hr_root"
+              sequence="95"/>
+
+    <menuitem id="menu_hr_faq_chatbot_chat"
+              name="Hỏi đáp"
+              parent="menu_hr_faq_chatbot_root"
+              action="action_hr_faq_chatbot_client"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_faq_chatbot_log"
+              name="Lịch sử hỏi đáp"
+              parent="menu_hr_faq_chatbot_root"
+              action="action_hr_faq_chat_log"
+              groups="hr.group_hr_manager"
+              sequence="20"/>
+
+</odoo>

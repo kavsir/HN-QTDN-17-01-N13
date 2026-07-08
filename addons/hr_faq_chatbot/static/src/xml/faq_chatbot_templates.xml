@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="hr_faq_chatbot.ChatbotTemplate" owl="1">
+        <div class="o_faq_chatbot">
+            <div class="o_faq_chatbot_header">
+                <h4>Trợ lý nội quy</h4>
+                <p class="text-muted">Hỏi về chính sách công ty, quy trình làm việc, nghỉ phép...</p>
+            </div>
+            
+            <div class="o_faq_chatbot_messages" t-ref="chatContainer">
+                <t t-foreach="state.messages" t-as="msg">
+                    <div t-attf-class="o_faq_msg o_faq_msg_{{msg.role}}">
+                        <div class="o_faq_msg_bubble">
+                            <span t-esc="msg.text"/>
+                            
+                            <div t-if="msg.sources and msg.sources.length" class="o_faq_msg_sources">
+                                <small>Nguồn:</small>
+                                <ul>
+                                    <t t-foreach="msg.sources" t-as="src">
+                                        <li t-esc="src"/>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+                
+                <div t-if="state.loading" class="o_faq_msg o_faq_msg_bot">
+                    <div class="o_faq_msg_bubble o_faq_msg_loading">Đang tra cứu...</div>
+                </div>
+            </div>
+            
+            <div class="o_faq_chatbot_input">
+                <input type="text"
+                       t-model="state.input"
+                       t-on-keydown="onKeydown"
+                       placeholder="Nhập câu hỏi về quy định, quy trình..."/>
+                <button class="btn btn-primary" t-on-click="sendQuestion">Gửi</button>
+            </div>
+        </div>
+    </t>
+
+</templates>
