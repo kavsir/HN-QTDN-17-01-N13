@@ -5,7 +5,7 @@
         <field name="name">hr.faq.chat.log.tree</field>
         <field name="model">hr.faq.chat.log</field>
         <field name="arch" type="xml">
-            <tree string="Lịch sử hỏi đáp">
+            <tree string="Lịch sử hỏi đáp" create="false" edit="false">
                 <field name="create_date" string="Thời gian"/>
                 <field name="employee_id"/>
                 <field name="question"/>
@@ -22,20 +22,24 @@
             <form string="Chi tiết hỏi đáp" create="false" edit="false">
                 <sheet>
                     <group>
-                        <field name="create_date"/>
-                        <field name="employee_id"/>
-                        <field name="user_id"/>
-                        <field name="found_answer"/>
-                        <field name="response_time_ms"/>
+                        <group>
+                            <field name="create_date" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="found_answer" readonly="1"/>
+                            <field name="response_time_ms" readonly="1"/>
+                        </group>
                     </group>
-                    <group string="Câu hỏi">
-                        <field name="question" nolabel="1"/>
+                    <group string="Câu hỏi đầu vào">
+                        <field name="question" nolabel="1" readonly="1"/>
                     </group>
-                    <group string="Câu trả lời">
-                        <field name="answer" nolabel="1"/>
+                    <group string="Câu trả lời từ Trợ lý (RAG)">
+                        <field name="answer" nolabel="1" readonly="1"/>
                     </group>
-                    <group string="Nguồn trích dẫn">
-                        <field name="sources" nolabel="1"/>
+                    <group string="Nguồn tài liệu trích dẫn">
+                        <field name="sources" nolabel="1" readonly="1"/>
                     </group>
                 </sheet>
             </form>
@@ -55,8 +59,8 @@
 
     <menuitem id="menu_hr_faq_chatbot_root"
               name="Trợ lý nội quy"
-              parent="hr.menu_hr_root"
-              sequence="95"/>
+              parent="nhan_su.menu_root" 
+              sequence="90"/>
 
     <menuitem id="menu_hr_faq_chatbot_chat"
               name="Hỏi đáp"
@@ -70,5 +74,13 @@
               action="action_hr_faq_chat_log"
               groups="hr.group_hr_manager"
               sequence="20"/>
+
+    <record id="hr.menu_hr_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_no_one')])]"/>
+    </record>
+
+    <record id="quan_ly_van_ban.menu_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_no_one')])]"/>
+    </record>
 
 </odoo>

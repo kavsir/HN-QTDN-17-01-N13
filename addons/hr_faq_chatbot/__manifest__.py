@@ -14,7 +14,7 @@ Toàn bộ hội thoại được lưu lại trong Odoo (menu Nhân sự > Trợ
 """,
     "category": "Human Resources",
     "author": "Đinh Trường Phong, Đinh Văn Tân Lượng, Nguyễn Đình Tài",
-    "depends": ["base", "web", "mail", "hr"],
+    "depends": ["base", "web", "mail", "hr", "nhan_su"],
     "data": [
         "security/ir.model.access.csv",
         "views/faq_chat_views.xml",
